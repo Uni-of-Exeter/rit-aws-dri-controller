@@ -5,7 +5,7 @@ import subprocess as sp
 
 class EnvironmentDeployer:
     def deploy(self, stack: str, environment: str):
-        wd = Path("terraform/deployments") / stack
+        wd = Path("terraform/stacks") / stack
         tfvars = Path("terraform/environments") / environment / "terraform.tfvars"
 
         sp.run(

@@ -4,7 +4,7 @@ from pathlib import Path
 import yaml
 
 class StackRenderer:
-    def __init__(self, stacks_dir: os.PathLike ='terraform/deployments'):
+    def __init__(self, stacks_dir: os.PathLike ='terraform/stacks'):
         self.stacks_dir = Path(stacks_dir)
 
     def render(self, stack_name: str):
