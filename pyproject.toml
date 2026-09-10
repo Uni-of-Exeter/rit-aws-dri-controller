@@ -6,6 +6,16 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "boto3>=1.43.91",
+    "boto3-stubs~=1.43.91",
     "jinja2>=3.1.6",
+    "pip>=26.2.1",
+    "pyyaml>=6.0.3",
     "typer>=0.27.2",
 ]
+
+[project.scripts]
+rit-platform = "rit_edris_developments.main:app"
+
+[build-system]
+requires = ["uv_build>=0.8.14,<0.9.0"]
+build-backend = "uv_build"
