@@ -1,3 +1,5 @@
+import os.path
+
 import typer
 import yaml
 
@@ -22,7 +24,9 @@ def add(stack: str,
 
 @stack_app.command('list')
 def list_stacks():
-    for s in manager.stacks_dir.iterdir(): print(s.name)
+    for s in manager.stacks_dir.iterdir():
+        if os.path.isdir(s):
+            print(s.name)
 
 @stack_app.command()
 def show(name: str):
