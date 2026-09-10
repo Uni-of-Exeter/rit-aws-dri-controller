@@ -1,0 +1,1 @@
+This is where stacks are composed of the default modules we've created to represent standard service offerings for research
