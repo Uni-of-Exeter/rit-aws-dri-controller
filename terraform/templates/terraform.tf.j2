@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "uoe-rit-edris-tfstates"
+    bucket       = "{{ stack.name }}-tfstates"
     key          = "data/${var.environment}/tfstate"
     region       = var.aws_region
     use_lockfile = true
