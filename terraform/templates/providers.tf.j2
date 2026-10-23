@@ -1,4 +1,12 @@
 provider "aws" {
+  # default profile will be used - in our case we rely on the environment to set this up
   region = var.aws_region
+
+  default_tags {
+    tags = {
+      environment     = var.environment
+      client          = var.client
+    }
+  }
 }
 

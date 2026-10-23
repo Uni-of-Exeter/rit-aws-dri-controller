@@ -5,3 +5,9 @@ variable "aws_region" {
 variable "environment" {
   type = string
 }
+
+variable "client" {
+  type = string
+  default = "research-it"
+  description = "Client code or identifier that facilitates billing - maps to default tags"
+}
