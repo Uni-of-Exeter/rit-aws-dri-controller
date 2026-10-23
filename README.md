@@ -53,10 +53,10 @@ rit-platform module create ec2
 # Then we go and edit the structure of t
 rit-platform stack create compute_infra
 rit-platform stack add compute_infra project_store s3_tiered
-rit_platform stack add compute_infra shared_volume ebs
-rit_platform stack add compute_infra project_server ec2 ...
-rit_platform stack add compute_infra ec2_ebs_mount 
-rit_platform stack add compute_infra ec2_access 
+rit-platform stack add compute_infra shared_volume ebs
+rit-platform stack add compute_infra project_server ec2 # TODO: params
+# TODO: rit-platform stack add compute_infra ec2_ebs_mount 
+# TODO: rit-platform stack add compute_infra ec2_access 
 rit-platform stack list
 rit-platform stack show compute_infra
 rit-platform terraform deploy compute_infra
