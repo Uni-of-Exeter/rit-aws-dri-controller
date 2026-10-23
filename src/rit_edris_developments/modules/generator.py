@@ -1,3 +1,6 @@
+import glob
+import logging
+import os
 from pathlib import Path
 
 import yaml
@@ -10,8 +13,7 @@ from jinja2 import (
 
 class ModuleGenerator:
     """
-    Creates Terraform modules from
-    predefined Jinja2 templates.
+    Creates Terraform modules from predefined Jinja2 templates.
     """
 
     def __init__(
@@ -32,14 +34,8 @@ class ModuleGenerator:
         **kwargs,
     ) -> Path:
 
-        self._validate_module_type(
-            module_type
-        )
-
-        source_dir = (
-            self.template_root /
-            module_type
-        )
+        self._validate_module_type(module_type)
+        source_dir = (self.template_root / module_type)
 
         target_dir = (
             self.implementation_root /
@@ -74,26 +70,15 @@ class ModuleGenerator:
             lstrip_blocks=True,
         )
 
-        for template_file in source_dir.glob(
-            "*.j2"
-        ):
-
-            output_name = template_file.name.replace(
-                ".j2",
-                "",
-            )
+        for template_file in source_dir.glob("*.j2"):
+            output_name = template_file.name.replace(".j2", "")
 
             template = env.get_template(
                 template_file.name
             )
 
-            rendered = template.render(
-                **context
-            )
-
-            (
-                target_dir / output_name
-            ).write_text(rendered)
+            rendered = template.render(**context)
+            (target_dir / output_name).write_text(rendered)
 
         self._write_manifest(
             target_dir,
@@ -106,12 +91,8 @@ class ModuleGenerator:
         self,
         module_type: str,
     ):
-
-        valid_types = {
-            "data",
-            "compute",
-            "application",
-        }
+        valid_types = [os.path.basename(directory) for directory in os.listdir("templates") if os.path.isdir()]
+        logging.debug(f"Got {len(valid_types)} valid types: {", ".join(valid_types)}")
 
         if module_type not in valid_types:
             raise ValueError(
@@ -132,22 +113,15 @@ class ModuleGenerator:
                 "environment"
             ],
             "parameters": {
-                k: v
-                for k, v
-                in context.items()
-                if k
-                not in {
+                k: v for k, v in context.items() if k not in [
                     "name",
                     "type",
                     "environment",
-                }
+                ]
             },
         }
 
-        with open(
-            target_dir / "module.yaml",
-            "w",
-        ) as handle:
+        with open(target_dir / "module.yaml", "w") as handle:
             yaml.safe_dump(
                 manifest,
                 handle,
