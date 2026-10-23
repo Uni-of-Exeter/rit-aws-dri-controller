@@ -120,4 +120,5 @@ venv.bak/
 
 
 ### 
+terraform/modules/implementations/*/
 terraform/stacks/*/
