@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import pathlib
 from pathlib import Path
 
 import yaml
@@ -22,9 +23,7 @@ class ModuleGenerator:
         implementation_root="terraform/modules/implementations",
     ):
         self.template_root = Path(template_root)
-        self.implementation_root = Path(
-            implementation_root
-        )
+        self.implementation_root = Path(implementation_root)
 
     def create_module(
         self,
@@ -35,24 +34,15 @@ class ModuleGenerator:
     ) -> Path:
 
         self._validate_module_type(module_type)
-        source_dir = (self.template_root / module_type)
-
-        target_dir = (
-            self.implementation_root /
-            module_type /
-            name
-        )
+        source_dir = self.template_root / module_type
+        target_dir = self.implementation_root / name
 
         if target_dir.exists():
             raise ValueError(
                 f"Module already exists: {name}"
             )
 
-        target_dir.mkdir(
-            parents=True,
-            exist_ok=False,
-        )
-
+        target_dir.mkdir(parents=True, exist_ok=False)
         context = {
             "name": name,
             "type": module_type,
@@ -60,9 +50,7 @@ class ModuleGenerator:
             **kwargs,
         }
 
-        loader = FileSystemLoader(
-            str(source_dir)
-        )
+        loader = FileSystemLoader(str(source_dir))
 
         env = Environment(
             loader=loader,
@@ -80,10 +68,7 @@ class ModuleGenerator:
             rendered = template.render(**context)
             (target_dir / output_name).write_text(rendered)
 
-        self._write_manifest(
-            target_dir,
-            context,
-        )
+        self._write_manifest(context, target_dir)
 
         return target_dir
 
@@ -91,19 +76,18 @@ class ModuleGenerator:
         self,
         module_type: str,
     ):
-        valid_types = [os.path.basename(directory) for directory in os.listdir("templates") if os.path.isdir()]
+        valid_types = [os.path.basename(directory)
+                       for directory in os.listdir(self.template_root)
+                       if os.path.isdir(self.template_root / directory)]
         logging.debug(f"Got {len(valid_types)} valid types: {", ".join(valid_types)}")
 
         if module_type not in valid_types:
-            raise ValueError(
-                f"Unsupported module type: "
-                f"{module_type}"
-            )
+            raise ValueError(f"Unsupported module type: {module_type}")
 
     def _write_manifest(
         self,
-        target_dir: Path,
         context: dict,
+        target_dir: pathlib.Path,
     ):
 
         manifest = {

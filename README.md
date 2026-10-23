@@ -47,9 +47,9 @@ The underlying components of the `terraform` directory are given thus. Remember,
 ```
 # First we generate our modules (using the "general" module is assumed without an additional parameter, which would allow
 # us to define preset templates to copy from using jinja2)
-rit-platform module generate s3_tiered
-rit-platform module generate ebs
-rit-platform module generate ec2
+rit-platform module create s3_tiered
+rit-platform module create ebs
+rit-platform module create ec2
 # Then we go and edit the structure of t
 rit-platform stack create compute_infra
 rit-platform stack add compute_infra project_store s3_tiered

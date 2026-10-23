@@ -8,14 +8,13 @@ generator = ModuleGenerator()
 
 @module_app.command()
 def create(
-    module_type: str,
     name: str,
+    module_type: str = "general",
     environment: str = "development",
 ):
-
     path = generator.create_module(
-        module_type=module_type,
         name=name,
+        module_type=module_type,
         environment=environment,
     )
 
