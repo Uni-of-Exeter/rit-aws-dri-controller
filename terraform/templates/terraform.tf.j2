@@ -8,7 +8,7 @@ terraform {
     }
   }
 
-  backend "tfstates" {
+  backend "s3" {
     bucket       = "uoe-rit-edris-tfstates"
     key          = "data/${var.environment}/tfstate"
     region       = var.aws_region
