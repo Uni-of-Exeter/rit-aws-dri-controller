@@ -1,0 +1,3 @@
+[submodule "terraform/modules/implementations"]
+	path = terraform/modules/implementations
+	url = git@github.com:Uni-of-Exeter/rit-aws-dri-modules.git
