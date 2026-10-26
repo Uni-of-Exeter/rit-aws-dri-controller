@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from platform_cli.terraform.generator import (
+from rit_aws_dri_controller.modules.generator import (
     ModuleGenerator,
 )
 

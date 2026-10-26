@@ -1,4 +1,4 @@
-from rit_edris_developments.stacks.renderer import StackRenderer
+from rit_aws_dri_controller.stacks.renderer import StackRenderer
 
 
 def test_renderer_init():

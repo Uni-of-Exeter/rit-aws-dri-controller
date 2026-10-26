@@ -1,4 +1,4 @@
-# rit-edris-developments
+# rit_aws_dri_controller
 
 ## Quick notes on setting up
 
@@ -11,6 +11,10 @@ If you don't want to provide the flag, use `AWS_PROFILE`
 ## Using floci
 
 You can use [floci](https://github.com/floci-io/floci-cli) for local cloud emulation. Follow the install instructions and set up an endpoint to use this instead of the SSO derived credentials above.
+
+When you `floci start`, use the `eval $( floci env )` to set the local environment and that will ensure terraform within the current shell works. As per the docs above, you can visit the [Floci UI](http://localhost:4566/_floci/ui) as well. 
+
+_Note that the floci env output uses `localhost.floci.ui` rather than `localhost`, so add this to your `/etc/hosts` or equivalent.  
 
 # Workflow(s)
 

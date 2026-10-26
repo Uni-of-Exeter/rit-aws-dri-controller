@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from rit_edris_developments.stacks.models import Stack
+from rit_aws_dri_controller.stacks.models import Stack
 
 class StackManager:
     def __init__(self, stacks_dir: os.PathLike = 'terraform/stacks'):

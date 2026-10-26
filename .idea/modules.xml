@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/rit-edris-developments.iml" filepath="$PROJECT_DIR$/.idea/rit-edris-developments.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/rit-aws-dri-controller.iml" filepath="$PROJECT_DIR$/.idea/rit-aws-dri-controller.iml" />
     </modules>
   </component>
 </project>

@@ -3,8 +3,8 @@ import os.path
 import typer
 import yaml
 
-from rit_edris_developments.stacks.manager import StackManager
-from rit_edris_developments.stacks.renderer import StackRenderer
+from rit_aws_dri_controller.stacks.manager import StackManager
+from rit_aws_dri_controller.stacks.renderer import StackRenderer
 
 stack_app = typer.Typer()
 manager = StackManager()

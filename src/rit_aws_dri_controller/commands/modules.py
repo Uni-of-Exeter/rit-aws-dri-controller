@@ -1,6 +1,6 @@
 import typer
 
-from rit_edris_developments.modules.generator import ModuleGenerator
+from rit_aws_dri_controller.modules.generator import ModuleGenerator
 
 module_app = typer.Typer()
 generator = ModuleGenerator()

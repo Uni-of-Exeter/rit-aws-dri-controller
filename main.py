@@ -1,5 +1,5 @@
 def main():
-    print("Hello from rit-edris-developments!")
+    print("Hello from rit_aws_dri_controller!")
 
 
 if __name__ == "__main__":

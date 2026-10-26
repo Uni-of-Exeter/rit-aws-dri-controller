@@ -1,7 +1,7 @@
 import typer
 
-from rit_edris_developments.terraform.backend import BackendManager
-from rit_edris_developments.terraform.deployer import EnvironmentDeployer
+from rit_aws_dri_controller.terraform.backend import BackendManager
+from rit_aws_dri_controller.terraform.deployer import EnvironmentDeployer
 
 terraform_app = typer.Typer()
 
@@ -19,8 +19,4 @@ def deploy(
     backend.ensure_backend()
 
     executor = EnvironmentDeployer()
-
-    executor.deploy(
-        stack,
-        environment,
-    )
+    executor.deploy(stack, environment)

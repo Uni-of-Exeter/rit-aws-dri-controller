@@ -2,7 +2,7 @@ import logging
 import sys
 import typer
 
-import rit_edris_developments.commands
+import rit_aws_dri_controller.commands
 
 app = typer.Typer()
 logging.basicConfig(
@@ -11,9 +11,9 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stderr)]
 )
 
-for nom in rit_edris_developments.commands.__all__:
+for nom in rit_aws_dri_controller.commands.__all__:
     name = nom.replace("_app", "")
-    app.add_typer(getattr(rit_edris_developments.commands, nom), name=name)
+    app.add_typer(getattr(rit_aws_dri_controller.commands, nom), name=name)
 
 if __name__ == "__main__":
     app()

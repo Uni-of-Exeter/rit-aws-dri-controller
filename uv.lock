@@ -265,7 +265,7 @@ wheels = [
 ]
 
 [[package]]
-name = "rit-edris-developments"
+name = "rit-aws-dri-controller"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
