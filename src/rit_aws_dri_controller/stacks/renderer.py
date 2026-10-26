@@ -18,3 +18,4 @@ class StackRenderer:
         (stack_dir / 'main.tf').write_text(out)
 
         # TODO: add variables required
+        # TODO: update git if present

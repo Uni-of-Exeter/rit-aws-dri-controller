@@ -49,21 +49,24 @@ The underlying components of the `terraform` directory are given thus. Remember,
 ## Basic workflow to sanity check configuration
 
 ```
-# First we generate our modules (using the "general" module is assumed without an additional parameter, which would allow
-# us to define preset templates to copy from using jinja2)
+# First we generate our modules (using the "general" module is assumed without an additional parameter, which would allow us to define preset templates to copy from using jinja2)
+rit-platform module create vpc_dual_w_bastion
 rit-platform module create s3_tiered
-rit-platform module create ebs
-rit-platform module create ec2
-# Then we go and edit the structure of t
-rit-platform stack create compute_infra
-rit-platform stack add compute_infra project_store s3_tiered
-rit-platform stack add compute_infra shared_volume ebs
-rit-platform stack add compute_infra project_server ec2 # TODO: params
-# TODO: rit-platform stack add compute_infra ec2_ebs_mount 
-# TODO: rit-platform stack add compute_infra ec2_access 
+rit-platform module create github_ecr
+rit-platform module create workflow_batch 
+
+# Then we go and edit the structure of the modules to provide an implementation and compose architectural stacks from individual items (batch-implementation-test is just one instance in its own repo!
+rit-platform stack create batch-implementation-test
+rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion
+rit-platform stack add batch-implementation-test test_store s3_tiered
+rit-platform stack add batch-implementation-test test_ecr_ci github_ecr
+rit-platform stack add batch-implementation-test test_batch workflow_batch
+
 rit-platform stack list
-rit-platform stack show compute_infra
-rit-platform terraform deploy compute_infra
+rit-platform stack show batch-implementation-test
+rit-platform terraform deploy batch-implementation-test
+
+# TODO: create more deployed stacks, customising or composing as you need
 ```
 
 # CREDITS
