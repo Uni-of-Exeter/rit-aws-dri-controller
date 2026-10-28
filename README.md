@@ -55,7 +55,7 @@ rit-platform module create s3_tiered
 rit-platform module create github_ecr
 rit-platform module create workflow_batch 
 
-# Then we go and edit the structure of the modules to provide an implementation and compose architectural stacks from individual items (batch-implementation-test is just one instance in its own repo!
+# Then we go and edit the structure of the modules to provide an implementation and compose architectural stacks from individual items (batch-implementation-test is just one instance in its own repo! git clone and use this to seed the repo)
 rit-platform stack create batch-implementation-test
 rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion
 rit-platform stack add batch-implementation-test test_store s3_tiered
@@ -64,7 +64,7 @@ rit-platform stack add batch-implementation-test test_batch workflow_batch
 
 rit-platform stack list
 rit-platform stack show batch-implementation-test
-rit-platform terraform deploy batch-implementation-test
+rit-platform terraform plan batch-implementation-test development
 
 # TODO: create more deployed stacks, customising or composing as you need
 ```

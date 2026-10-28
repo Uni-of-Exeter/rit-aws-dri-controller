@@ -1,9 +1,0 @@
-resource "aws_s3_bucket" "{{ name }}" {
-
-  bucket = "${var.environment}-${var.name}"
-
-  tags = {
-    Module = "{{ name }}"
-    Type   = "data"
-  }
-}
