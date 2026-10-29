@@ -11,7 +11,7 @@ terraform {
   backend "s3" {
     bucket       = ""
     key          = ""
-    region       = var.aws_region
+    region       = ""
     use_lockfile = true
     encrypt      = true
   }

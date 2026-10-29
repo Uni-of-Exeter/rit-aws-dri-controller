@@ -60,5 +60,6 @@ class BackendManager:
 bucket = "{self.bucket_name}" 
 key    = "tfstate"
 region = "{self.region}"
-profile= "{self.profile}" """)
+profile= "{self.profile}" 
+            """.strip())
         return config_path

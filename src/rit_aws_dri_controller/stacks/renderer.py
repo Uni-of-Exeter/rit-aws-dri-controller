@@ -10,8 +10,8 @@ from jinja2 import (
 
 class StackRenderer:
     def __init__(self,
-                 stacks_dir: os.PathLike ='terraform/stacks',
-                 templates_dir: os.PathLike ='terraform/templates'):
+                 stacks_dir: os.PathLike = 'terraform/stacks',
+                 templates_dir: os.PathLike = 'terraform/templates'):
         self.stacks_dir = Path(stacks_dir)
         self.templates_dir = Path(templates_dir)
 
@@ -44,6 +44,3 @@ class StackRenderer:
             )
             rendered = template.render(**context)
             (stack_dir / output_name).write_text(rendered)
-
-        # TODO: add variables required
-        # TODO: update git if present

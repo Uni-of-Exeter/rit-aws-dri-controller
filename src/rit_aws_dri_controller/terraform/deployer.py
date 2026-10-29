@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 import shlex
@@ -6,6 +7,10 @@ import subprocess as sp
 
 from rit_aws_dri_controller.terraform.backend import BackendManager
 
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+)
 
 class EnvironmentDeployer:
     def __init__(self,
@@ -30,7 +35,26 @@ class EnvironmentDeployer:
         backend.ensure_backend()
         self.config_path = backend.write_configuration(self.wd)
 
+    def write_variables(self):
+        loader = FileSystemLoader(os.path.join("terraform", "templates"))
+        env = Environment(
+            loader=loader,
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+
+        context = dict(
+            stack=self.stack,
+            environment=self.environment,
+        )
+        template = env.get_template(os.path.join("environments", self.environment, "terraform.vars.j2"))
+        rendered = template.render(**context)
+        (self.wd / f"{self.environment}.tfvars").write_text(rendered)
+        # TODO: default variables from each module implementation can be added via jinja, hence it's use!
+
     def plan(self):
+        self.write_variables()
+
         try:
             sp.run(shlex.split(f"terraform init -backend-config={self.config_path}"), cwd=self.wd, check=True)
             sp.run(shlex.split(f"terraform plan -backend-config={self.config_path} -var-file={str(self.tfvars)}"), cwd=self.wd, check=True)
