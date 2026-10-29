@@ -1,7 +1,10 @@
+import logging
 from pathlib import Path
 
 import shlex
 import subprocess as sp
+
+import typer
 
 from rit_aws_dri_controller.terraform.backend import BackendManager
 
@@ -35,9 +38,15 @@ class EnvironmentDeployer:
         backend.ensure_backend()
 
     def plan(self):
-        sp.run(shlex.split("terraform init"), cwd=self.wd, check=True)
-        sp.run(shlex.split(f"terraform plan] -var-file={str(self.tfvars)}"), cwd=self.wd, check=True)
+        try:
+            sp.run(shlex.split("terraform init"), cwd=self.wd, check=True)
+            sp.run(shlex.split(f"terraform plan -var-file={str(self.tfvars)}"), cwd=self.wd, check=True)
+        except sp.CalledProcessError as e:
+            logging.warning("Failed to run plan successfully, review the terraform warning")
 
     def deploy(self):
-        sp.run(shlex.split("terraform init"), cwd=self.wd, check=True)
-        sp.run(shlex.split(f"terraform deploy -var-file={str(self.tfvars)}"), cwd=self.wd, check=True)
+        try:
+            sp.run(shlex.split("terraform init"), cwd=self.wd, check=True)
+            sp.run(shlex.split(f"terraform deploy -var-file={str(self.tfvars)}"), cwd=self.wd, check=True)
+        except sp.CalledProcessError as e:
+            raise RuntimeError("Failed to run deployment successfully, review the terraform warning")

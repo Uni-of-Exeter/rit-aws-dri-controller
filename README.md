@@ -69,6 +69,10 @@ rit-platform terraform plan batch-implementation-test development
 # TODO: create more deployed stacks, customising or composing as you need
 ```
 
+# Things to do!
+
+* [ ] Sort out logging and typer integration (including verbosity setup)
+
 # CREDITS
 
 Written by James Byrne at the University of Exeter 2026.

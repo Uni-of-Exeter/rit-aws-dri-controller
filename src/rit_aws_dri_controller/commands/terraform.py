@@ -31,7 +31,8 @@ def deploy(
     region: str = "eu-west-2",
 ):
     executor = EnvironmentDeployer(stack, environment, region, get_profile(stack, environment))
-    executor.plan()
+    executor.deploy()
+
 
 @terraform_app.command()
 def plan(
@@ -40,4 +41,4 @@ def plan(
     region: str = "eu-west-2",
 ):
     executor = EnvironmentDeployer(stack, environment, region, get_profile(stack, environment))
-    executor.deploy()
+    executor.plan()
