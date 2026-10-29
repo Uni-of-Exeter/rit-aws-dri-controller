@@ -36,11 +36,7 @@ class StackRenderer:
         context = dict(
             stack=stack
         )
-        for template_file in self.templates_dir.glob("*.j2"):
-            output_name = template_file.name.replace(".j2", "")
-
-            template = env.get_template(
-                template_file.name
-            )
+        for template_file in self.templates_dir.glob("*.tf"):
+            template = env.get_template(template_file.name)
             rendered = template.render(**context)
-            (stack_dir / output_name).write_text(rendered)
+            (stack_dir / template_file).write_text(rendered)

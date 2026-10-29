@@ -58,15 +58,10 @@ class ModuleGenerator:
             lstrip_blocks=True,
         )
 
-        for template_file in source_dir.glob("*.j2"):
-            output_name = template_file.name.replace(".j2", "")
-
-            template = env.get_template(
-                template_file.name
-            )
-
+        for template_file in source_dir.glob("*.tf"):
+            template = env.get_template(template_file.name)
             rendered = template.render(**context)
-            (target_dir / output_name).write_text(rendered)
+            (target_dir / template_file).write_text(rendered)
 
         self._write_manifest(context, target_dir)
 
