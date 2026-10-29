@@ -5,8 +5,9 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/terraform/stacks/test_datastore/.terraform" />
+      <excludeFolder url="file://$MODULE_DIR$/terraform/stacks/batch-implementation-test/.terraform" />
     </content>
-    <orderEntry type="jdk" jdkName="~/code/rit-edris-developments/.venv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="~/code/rit-aws-dri-controller/.venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
