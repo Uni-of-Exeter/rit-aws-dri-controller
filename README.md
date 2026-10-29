@@ -64,7 +64,7 @@ rit-platform stack add batch-implementation-test test_batch workflow_batch
 
 rit-platform stack list
 rit-platform stack show batch-implementation-test
-rit-platform terraform plan batch-implementation-test development
+rit-platform terraform plan batch-implementation-test
 
 # TODO: create more deployed stacks, customising or composing as you need
 ```
