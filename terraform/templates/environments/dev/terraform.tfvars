@@ -1,1 +1,1 @@
-{% extends "../terraform.tfvars.j2" %}
+{% extends "environments/terraform.tfvars" %}

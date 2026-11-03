@@ -56,10 +56,9 @@ class BackendManager:
     def write_configuration(self, stack_path: os.PathLike):
         config_path = pathlib.Path(stack_path) / f"{self.bucket_name}.config"
         with open(config_path, "w") as f:
-            f.write(f"""
-bucket = "{self.bucket_name}" 
+            f.write(f"""bucket = "{self.bucket_name}" 
 key    = "tfstate"
 region = "{self.region}"
 profile= "{self.profile}" 
-            """.strip())
+""")
         return config_path
