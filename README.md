@@ -22,14 +22,21 @@ _Note that the floci env output uses `localhost.floci.ui` rather than `localhost
 
 This is very much a work in progress. The theory goes: 
 
-1. Use a new generator to make modules which create new implementations of services (s3_tiered, ebs, ec2 in the above example)
-   a. These are setup to be parameterised with typer
-   b. The modules track the state of the repository and are committed to this codebase 
-2. Stacks get built dynamically with generated / filled in implementations of modules
-   a. These are stored within the stacks directory
-   b. Stacks could be independently managed repositories tracking against individual accounts, or alternatively one monorepo that can be managed and deployed en masse as changes to the tooling are made.
+1. Use the module generator to make modules which create implementations of services (s3_tiered, ebs, ec2 in the below example) - `rit-platform module create ...`
+   a. You then configure the `module.yaml` to define the module parameters
+   b. Implement you module code 
+   c. The modules track the state of the repository and are committed to this codebase
+2. Stacks get **composed** from modules *and themselves are individual terraform repositories*, using `rit-platform stack create`.
+   a. These are stored within the stacks directory. Terraform can be used independently of these tools and ideally these will be stored as separate VCS repositories (do not commit them to this repo!)
+   b. Modules are added to stacks with `rit-platform stack add [stack] [module] ...`
+   c. Stacks may be initialised against individual accounts for multiple environments. This tool outputs the necessary backend
+3. Terraform is then run with `rit-platform terraform ...`
+   a. This generates the configuration required for the environment you're running against
+   b. The tool can be used to handle the execution, but once in place the stack can be used with `terraform` directly 
 
-As modules are updated / new functionality added, previous stacks are either manually updated or recreated to reflect the changes. The latter can be incremental against the existing state, and provenance for the stack outputs (e.g. the commands to recreate the stack) can be stored alongside the terraform.
+As modules are updated and new functionality added, previous stacks can be deployed again to capture the changes made. Stacks can be independently managed as well. 
+
+This all makes `rit-platform` a manner by which to build consistent cloud infrastructure using stacks, update previous ones across multiple environments and accounts easily, and derive new functionality for both modules and new stacks based on controlled tooling rather than error-prone copy-and-paste.
 
 ### Why not just use terraform
 
