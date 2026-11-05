@@ -36,7 +36,7 @@ class EnvironmentDeployer:
         self.config_path = os.path.basename(backend.write_configuration(self.wd))
 
     def write_variables(self):
-        loader = FileSystemLoader(os.path.join("terraform", "templates"))
+        loader = FileSystemLoader(os.path.join("terraform", "templates", "environments"))
         env = Environment(
             loader=loader,
             trim_blocks=True,
@@ -47,7 +47,7 @@ class EnvironmentDeployer:
             stack=self.stack,
             environment=self.environment,
         )
-        template = env.get_template(os.path.join("environments", self.environment, "terraform.tfvars"))
+        template = env.get_template(os.path.join(self.environment, "terraform.tfvars"))
         rendered = template.render(**context)
         (self.wd / f"{self.environment}.tfvars").write_text(rendered)
         # TODO: default variables from each module implementation can be added via jinja, hence it's use!
