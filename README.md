@@ -40,18 +40,18 @@ This all makes `rit-platform` a manner by which to build consistent cloud infras
 
 ### Why not just use terraform
 
-Terraform is fantastic against individual accounts, but scaling to manage 100s of accounts is not the easiest, especially when sharing module implementations across accounts. Therefore some controller software offers the ability to update projects en masse and have a singular store of module code that can be used to update (potentially piecemeal) existing environments. 
+Terraform is fantastic working with a single repo against a single architecture, but scaling to manage 100s of individual architectures across accounts is not the easiest, especially when sharing module implementations, updates, and consistent code across implementations. Therefore, controller software offers the ability to update projects en masse, generate new implementations quickly, and offer better potential for consisntency which improves security and auditability. 
 
-Each stack ultimately is still an individual terraform project and can be treated as such.
+Each stack ultimately is **still an individual terraform project** and can be treated as such.
 
 ## Terraform structure
 
 The underlying components of the `terraform` directory are given thus. Remember, this is the *controller* for the broader cloud infrastructure!
 
-* `environments`: ...
 * `modules`: ...
 * `stacks`: ...
 * `templates`: ...
+  * `environments`: ...
 
 ## Basic workflow to sanity check configuration
 
@@ -79,6 +79,9 @@ rit-platform terraform plan batch-implementation-test
 # Things to do!
 
 * [ ] Sort out logging and typer integration (including verbosity setup)
+* [ ] Fill out variables when the modules are added to the stack
+  * [ ] Do this through initial mapping in code: project level vars to module blocks
+  * [ ] Eventually make this a Q&A with the user
 
 # CREDITS
 

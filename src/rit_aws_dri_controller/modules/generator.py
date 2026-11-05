@@ -2,8 +2,11 @@ import glob
 import logging
 import os
 import pathlib
-from pathlib import Path
 
+from pathlib import Path
+from typing import Union
+
+import tomllib
 import yaml
 
 from jinja2 import (
@@ -19,7 +22,8 @@ class ModuleGenerator:
 
     def __init__(
         self,
-        template_root="terraform/modules/templates",
+        # TODO: template_root got a little messy, clean it up
+        template_root="terraform/templates",
         implementation_root="terraform/modules/implementations",
     ):
         self.template_root = Path(template_root)
@@ -27,38 +31,41 @@ class ModuleGenerator:
 
     def create_module(
         self,
-        module_type: str,
+        module_template: str,
         name: str,
-        environment: str = "dev",
+        param_environment: Union[str, None],
         **kwargs,
     ) -> Path:
-
-        self._validate_module_type(module_type)
-        source_dir = self.template_root / module_type
+        self._validate_module_type(module_template)
         target_dir = self.implementation_root / name
 
         if target_dir.exists():
-            raise ValueError(
-                f"Module already exists: {name}"
-            )
+            raise ValueError(f"Module already exists: {name}")
 
-        target_dir.mkdir(parents=True, exist_ok=False)
-        context = {
-            "name": name,
-            "type": module_type,
-            "environment": environment,
-            **kwargs,
-        }
-
-        loader = FileSystemLoader(str(source_dir))
-
+        loader = FileSystemLoader(self.template_root)
         env = Environment(
             loader=loader,
             trim_blocks=True,
             lstrip_blocks=True,
         )
 
-        for template_file in source_dir.glob("*.tf"):
+        context = {
+            "name": name,
+            "source_template": module_template,
+        }
+
+        param_dict = dict()
+        if param_environment is not None:
+            template = env.get_template(f"environments/{param_environment}/terraform.tfvars")
+            param_data = tomllib.loads(template.render(**context))
+            param_dict.update(param_data)
+        param_dict.update(kwargs)
+        # This becomes the parameters and defaults dictionary for the module
+        # with mappings specified in the stack add command
+        context["parameters"] = param_dict
+
+        target_dir.mkdir(parents=True, exist_ok=False)
+        for template_file in pathlib.Path(f"modules/{module_template}").glob("*.*"):
             template = env.get_template(template_file.name)
             rendered = template.render(**context)
             (target_dir / template_file).write_text(rendered)
@@ -72,8 +79,8 @@ class ModuleGenerator:
         module_type: str,
     ):
         valid_types = [os.path.basename(directory)
-                       for directory in os.listdir(self.template_root)
-                       if os.path.isdir(self.template_root / directory)]
+                       for directory in os.listdir(self.template_root / "modules")
+                       if os.path.isdir(self.template_root / "modules" / directory)]
         logging.debug(f"Got {len(valid_types)} valid types: {", ".join(valid_types)}")
 
         if module_type not in valid_types:
@@ -84,13 +91,10 @@ class ModuleGenerator:
         context: dict,
         target_dir: pathlib.Path,
     ):
-
         manifest = {
             "name": context["name"],
             "type": context["type"],
-            "environment": context[
-                "environment"
-            ],
+            "environment": context["environment"],
             "parameters": {
                 k: v for k, v in context.items() if k not in [
                     "name",
