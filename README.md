@@ -60,19 +60,33 @@ The underlying components of the `terraform` directory are given thus. Remember,
 # Additional arguments are mapped into the default variables for the generated modules
 rit-platform module create vpc_dual_w_bastion \
     --bastion_instance_type t3.medium \
-    --bastion_key_name exeter-bastion-key
-rit-platform module create s3_tiered
+    --bastion_key_name exeter-bastion-key \
+    --availability_zone "" \
+    --data_bucket "" \
+    --output_bucket ""
+rit-platform module create s3_tiered \
+    --account_id "" \
+    --remote_s3_bucket_arn
+    
 rit-platform module create github_ecr
 rit-platform module create workflow_batch 
 
 # Then we go and edit the structure of the modules to provide the resource implementations 
 
+# We then create a stack to house our modules
+rit-platform stack create batch-implementation-test
+
 # Next, we compose architecture stacks from individual modules (batch-implementation-test is just one terraform architecture in its own repository, usable independently with terraform)
 # The additional parameters allow specification of where the variable input is derived from
-rit-platform stack create batch-implementation-test
+rit-platform stack add batch-implementation-test test_store s3_tiered \
+    --account_id data.aws_caller_identity.current.account_id
+
 rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion \
-    --bastion_instance_type t3.nano
-rit-platform stack add batch-implementation-test test_store s3_tiered
+    --availability_zone data.aws_availability_zones.available.names[0] \
+    --data_bucket module.s3_tiered.s3_data_bucket \
+    --output_bucket module.s3_tiered.s3_output_bucket
+    
+    
 rit-platform stack add batch-implementation-test test_ecr_ci github_ecr
 rit-platform stack add batch-implementation-test test_batch workflow_batch
 

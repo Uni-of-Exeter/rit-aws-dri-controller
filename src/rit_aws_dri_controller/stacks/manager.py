@@ -47,7 +47,9 @@ class StackManager:
             module_spec["params"][k] = f"var.{k}"
 
         for k, v in params.items():
-            module_spec["params"][k] = v if v.startswith("var.") else f"\"{v}\""
+            module_spec["params"][k] = v \
+                if any([v.startswith(prefix) for prefix in ["data.", "module.", "var."]]) \
+                else f"\"{v}\""
 
         stack['modules'].append(module_spec)
         logging.info(f"Module {resource_name} added to stack {stack['name']}")

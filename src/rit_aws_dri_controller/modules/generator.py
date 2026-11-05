@@ -60,7 +60,7 @@ class ModuleGenerator:
             template = env.get_template(template_name)
             param_data = tomllib.loads(template.render(**context))
             param_dict.update(param_data)
-        param_dict.update(kwargs)
+        param_dict.update({k: v if v != "" else None for k, v in kwargs.items()})
         # This becomes the parameters and defaults dictionary for the module
         # with mappings specified in the stack add command
         param_dict["module_name"] = context["name"]
@@ -108,7 +108,7 @@ class ModuleGenerator:
         manifest = {
             "name": context["name"],
             "source_template": context["source_template"],
-            "parameters": list(context["parameters"].keys()) + ["tags"]
+            "parameters": list(context["parameters"].keys())
         }
 
         with open(target_dir / "module.yaml", "w") as handle:
