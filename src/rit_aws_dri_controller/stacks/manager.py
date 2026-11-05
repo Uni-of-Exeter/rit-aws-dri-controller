@@ -43,7 +43,7 @@ class StackManager:
             'type': module_type,
             'params': {}
         }
-        for k in ["aws_region", "project_name", "environment", "client", "tags"]:
+        for k in ["aws_region", "project_name", "environment"]:
             module_spec["params"][k] = f"var.{k}"
 
         for k, v in params.items():
