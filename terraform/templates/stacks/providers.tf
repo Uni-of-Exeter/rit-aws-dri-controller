@@ -4,9 +4,9 @@ provider "aws" {
 
   default_tags {
     tags = {
+      project_name    = var.project_name
       environment     = var.environment
       client          = var.client
-
     }
   }
 }

@@ -1,4 +1,5 @@
 import os.path
+import re
 
 import typer
 import yaml
@@ -15,11 +16,21 @@ def create(name: str):
     manager.create(name)
     renderer.render(name)
 
-@stack_app.command()
+@stack_app.command(
+    context_settings=dict(
+        allow_extra_args=True,
+        ignore_unknown_options=True),
+)
 def add(stack: str,
         module: str,
-        module_type: str):
-    manager.add_module(stack, module, module_type)
+        module_type: str,
+        ctx: typer.Context):
+    param_kwargs = dict(zip(
+        [re.sub(r"^--", "", el) for el in ctx.args[::2]],
+        ctx.args[1::2]
+    ))
+
+    manager.add_module(stack, module, module_type, param_kwargs)
     renderer.render(stack)
 
 @stack_app.command('list')
