@@ -19,13 +19,6 @@ class StackRenderer:
         stack_dir = self.stacks_dir / stack_name
         stack = yaml.safe_load((stack_dir / 'stack.yaml').read_text())
 
-        out = "".join([f"""module "{m["name"]}" {{
-  source = "../../modules/implementations/{m["type"]}"
-}}
-""" for m in stack['modules']])
-
-        (stack_dir / 'main.tf').write_text(out)
-
         loader = FileSystemLoader(str(self.templates_dir))
         env = Environment(
             loader=loader,
@@ -39,4 +32,4 @@ class StackRenderer:
         for template_file in self.templates_dir.glob("*"):
             template = env.get_template(template_file.name)
             rendered = template.render(**context)
-            (stack_dir / template_file).write_text(rendered)
+            (stack_dir / template_file.name).write_text(rendered)

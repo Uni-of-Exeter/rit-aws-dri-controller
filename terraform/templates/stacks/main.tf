@@ -2,8 +2,8 @@
 module "{{ module.name }}" {
   source = "../../modules/implementations/{{ module.type }}"
 
-{% for param in module.parameters %}
-  {{ param.name }} = {{ param.value }}
+{% for k, v in module.params.items() %}
+  {{ k }} = {{ v }}
 {% endfor %}
 }
 {% endfor %}

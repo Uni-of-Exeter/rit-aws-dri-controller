@@ -33,20 +33,23 @@ class StackManager:
                    resource_name: str,
                    module_type: str,
                    params: dict):
-        s = self.load(stack_name)
+        stack = self.load(stack_name)
 
-        if resource_name in [m["name"] for m in s['modules']]:
+        if resource_name in [m["name"] for m in stack['modules']]:
             raise RuntimeError(f"Resource {resource_name} already exists")
 
-        s['modules'].append({
+        module_spec = {
             'name': resource_name,
-            'type': module_type
-        })
-        logging.info(f"Module {resource_name} added to stack {s['name']}")
-
+            'type': module_type,
+            'params': {}
+        }
         for k in ["aws_region", "project_name", "environment", "client", "tags"]:
-            s['params'][k] = f"var.{k}"
+            module_spec["params"][k] = f"var.{k}"
 
         for k, v in params.items():
-            s['params'][k] = v
-        self.save(s)
+            module_spec["params"][k] = v if v.startswith("var.") else f"\"{v}\""
+
+        stack['modules'].append(module_spec)
+        logging.info(f"Module {resource_name} added to stack {stack['name']}")
+
+        self.save(stack)

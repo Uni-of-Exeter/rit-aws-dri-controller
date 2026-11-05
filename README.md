@@ -56,8 +56,8 @@ The underlying components of the `terraform` directory are given thus. Remember,
 ## Basic workflow to sanity check configuration
 
 ```
-# First we generate our modules (using the "general" module is assumed without an additional parameter, which would allow us to define preset templates to copy from using jinja2)
-
+# First we generate our module based on the general template with development default parameters.
+# Additional arguments are mapped into the default variables for the generated modules
 rit-platform module create vpc_dual_w_bastion \
     --bastion_instance_type t3.medium \
     --bastion_key_name exeter-bastion-key
@@ -65,15 +65,21 @@ rit-platform module create s3_tiered
 rit-platform module create github_ecr
 rit-platform module create workflow_batch 
 
-# Then we go and edit the structure of the modules to provide an implementation and compose architectural stacks from individual items (batch-implementation-test is just one instance in its own repo! git clone and use this to seed the repo)
+# Then we go and edit the structure of the modules to provide the resource implementations 
+
+# Next, we compose architecture stacks from individual modules (batch-implementation-test is just one terraform architecture in its own repository, usable independently with terraform)
+# The additional parameters allow specification of where the variable input is derived from
 rit-platform stack create batch-implementation-test
-rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion
+rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion \
+    --bastion_instance_type t3.nano
 rit-platform stack add batch-implementation-test test_store s3_tiered
 rit-platform stack add batch-implementation-test test_ecr_ci github_ecr
 rit-platform stack add batch-implementation-test test_batch workflow_batch
 
 rit-platform stack list
 rit-platform stack show batch-implementation-test
+
+aws sso login
 rit-platform terraform plan batch-implementation-test
 
 # TODO: create more deployed stacks, customising or composing as you need
