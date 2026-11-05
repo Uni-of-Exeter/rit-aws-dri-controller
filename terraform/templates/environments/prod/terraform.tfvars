@@ -1,4 +1,4 @@
-{% extends "environments/terraform.tfvars" %}
+{% extends "base.terraform.tfvars" %}
 {% block header %}
 aws_region   = "eu-west-2"
 project_name = "project_name"

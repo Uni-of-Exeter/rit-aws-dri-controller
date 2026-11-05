@@ -11,7 +11,7 @@ from jinja2 import (
 class StackRenderer:
     def __init__(self,
                  stacks_dir: os.PathLike = 'terraform/stacks',
-                 templates_dir: os.PathLike = 'terraform/templates'):
+                 templates_dir: os.PathLike = 'terraform/templates/stacks'):
         self.stacks_dir = Path(stacks_dir)
         self.templates_dir = Path(templates_dir)
 
@@ -36,7 +36,7 @@ class StackRenderer:
         context = dict(
             stack=stack
         )
-        for template_file in self.templates_dir.glob("*.tf"):
+        for template_file in self.templates_dir.glob("*"):
             template = env.get_template(template_file.name)
             rendered = template.render(**context)
             (stack_dir / template_file).write_text(rendered)

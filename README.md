@@ -57,7 +57,10 @@ The underlying components of the `terraform` directory are given thus. Remember,
 
 ```
 # First we generate our modules (using the "general" module is assumed without an additional parameter, which would allow us to define preset templates to copy from using jinja2)
-rit-platform module create vpc_dual_w_bastion
+
+rit-platform module create vpc_dual_w_bastion \
+    --bastion_instance_type t3.medium \
+    --bastion_key_name exeter-bastion-key
 rit-platform module create s3_tiered
 rit-platform module create github_ecr
 rit-platform module create workflow_batch 

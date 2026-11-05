@@ -22,11 +22,12 @@ class ModuleGenerator:
 
     def __init__(
         self,
-        # TODO: template_root got a little messy, clean it up
-        template_root="terraform/templates",
+        environment_template_root="terraform/templates/environments",
+        module_template_root="terraform/templates/modules",
         implementation_root="terraform/modules/implementations",
     ):
-        self.template_root = Path(template_root)
+        self.tmpl_env_root = Path(environment_template_root)
+        self.tmpl_module_root = Path(module_template_root)
         self.implementation_root = Path(implementation_root)
 
     def create_module(
@@ -40,11 +41,10 @@ class ModuleGenerator:
         target_dir = self.implementation_root / name
 
         if target_dir.exists():
-            raise ValueError(f"Module already exists: {name}")
+            logging.warning(f"Module already exists: {name}, only generating missing files")
 
-        loader = FileSystemLoader(self.template_root)
         env = Environment(
-            loader=loader,
+            loader= FileSystemLoader(self.tmpl_env_root),
             trim_blocks=True,
             lstrip_blocks=True,
         )
@@ -56,19 +56,33 @@ class ModuleGenerator:
 
         param_dict = dict()
         if param_environment is not None:
-            template = env.get_template(f"environments/{param_environment}/terraform.tfvars")
+            template_name = os.path.join(param_environment, "terraform.tfvars")
+            template = env.get_template(template_name)
             param_data = tomllib.loads(template.render(**context))
             param_dict.update(param_data)
         param_dict.update(kwargs)
         # This becomes the parameters and defaults dictionary for the module
         # with mappings specified in the stack add command
+        param_dict["module_name"] = context["name"]
         context["parameters"] = param_dict
 
+        env = Environment(
+            loader= FileSystemLoader(self.tmpl_module_root),
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+
         target_dir.mkdir(parents=True, exist_ok=False)
-        for template_file in pathlib.Path(f"modules/{module_template}").glob("*.*"):
-            template = env.get_template(template_file.name)
-            rendered = template.render(**context)
-            (target_dir / template_file).write_text(rendered)
+        logging.info(pathlib.Path(f"modules/{module_template}"))
+        for template_file in (self.tmpl_module_root / module_template).glob("*.tf"):
+            template = env.get_template(os.path.join(module_template, template_file.name))
+            rendered = template.render(context=context)
+            target_filename = (target_dir / template_file.name)
+            if not os.path.exists(target_filename):
+                logging.debug(f"Generating {target_filename}")
+                target_filename.write_text(rendered)
+            else:
+                logging.info(f"Skipped {target_filename} as already exists")
 
         self._write_manifest(context, target_dir)
 
@@ -79,8 +93,8 @@ class ModuleGenerator:
         module_type: str,
     ):
         valid_types = [os.path.basename(directory)
-                       for directory in os.listdir(self.template_root / "modules")
-                       if os.path.isdir(self.template_root / "modules" / directory)]
+                       for directory in os.listdir(self.tmpl_module_root)
+                       if os.path.isdir(self.tmpl_module_root / directory)]
         logging.debug(f"Got {len(valid_types)} valid types: {", ".join(valid_types)}")
 
         if module_type not in valid_types:
@@ -93,15 +107,8 @@ class ModuleGenerator:
     ):
         manifest = {
             "name": context["name"],
-            "type": context["type"],
-            "environment": context["environment"],
-            "parameters": {
-                k: v for k, v in context.items() if k not in [
-                    "name",
-                    "type",
-                    "environment",
-                ]
-            },
+            "source_template": context["source_template"],
+            "parameters": list(context["parameters"].keys()) + ["tags"]
         }
 
         with open(target_dir / "module.yaml", "w") as handle:

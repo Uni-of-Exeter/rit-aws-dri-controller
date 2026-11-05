@@ -1,3 +1,3 @@
 output "module_name" {
-  value = var.name
+  value = var.module_name
 }

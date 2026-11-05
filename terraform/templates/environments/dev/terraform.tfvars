@@ -1,10 +1,6 @@
-{% extends "environments/terraform.tfvars" %}
+{% extends "terraform.tfvars" %}
 
 # TODO: move these into the module implementation yaml to pull into the stacks
-
-# --- Bastion ---
-bastion_instance_type = "t3.medium"
-bastion_key_name      = "exeter-bastion-key" # Must pre-exist in AWS
 
 # --- Remote Data Source ---
 remote_s3_bucket_arn = "arn:aws:s3:::external-data-bucket" # Replace
