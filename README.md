@@ -58,15 +58,15 @@ The underlying components of the `terraform` directory are given thus. Remember,
 ```
 # First we generate our module based on the general template with development default parameters.
 # Additional arguments are mapped into the default variables for the generated modules
+rit-platform module create s3_tiered \
+    --account_id "" \
+    --remote_s3_bucket_arn
 rit-platform module create vpc_dual_w_bastion \
     --bastion_instance_type t3.medium \
     --bastion_key_name exeter-bastion-key \
     --availability_zone "" \
     --data_bucket "" \
     --output_bucket ""
-rit-platform module create s3_tiered \
-    --account_id "" \
-    --remote_s3_bucket_arn
     
 rit-platform module create github_ecr
 rit-platform module create workflow_batch 

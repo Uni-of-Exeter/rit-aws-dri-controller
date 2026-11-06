@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import pathlib
+import re
 
 from pathlib import Path
 from typing import Union
@@ -60,11 +61,36 @@ class ModuleGenerator:
             template = env.get_template(template_name)
             param_data = tomllib.loads(template.render(**context))
             param_dict.update(param_data)
-        param_dict.update({k: v if v != "" else None for k, v in kwargs.items()})
+        param_dict.update({
+            k: v if v != ""
+            else None
+            for k, v in kwargs.items()})
+        param_types = dict()
+
+        # Could use pyhcl or python-hcl2? Takes longer to figure out than denote types through inference
+        # This should be better expressed against https://developer.hashicorp.com/terraform/language/expressions/types
+        for param in param_dict:
+            param_types[param] = "string"
+
+            # FIXME: we make an assumption about the complex types here
+
+            logging.debug(f"{param}: {param_dict[param]}")
+
+            if type(param_dict[param]) == str:
+                if re.match(r"^(true|false)$", param_dict[param]):
+                    param_types[param] = "bool"
+                elif re.match(r"^\d+(\.\d+)?$", param_dict[param]):
+                    param_types[param] = "number"
+            elif type(param_dict[param]) == list:
+                param_types[param] = "list(string)"
+            elif type(param_dict[param]) == dict:
+                param_types[param] = "map(string)"
+
         # This becomes the parameters and defaults dictionary for the module
         # with mappings specified in the stack add command
         param_dict["module_name"] = context["name"]
         context["parameters"] = param_dict
+        context["types"] = param_types
 
         env = Environment(
             loader= FileSystemLoader(self.tmpl_module_root),
@@ -73,7 +99,8 @@ class ModuleGenerator:
         )
 
         target_dir.mkdir(parents=True, exist_ok=False)
-        logging.info(pathlib.Path(f"modules/{module_template}"))
+        logging.info("Generating module " + f"modules/{module_template}")
+        
         for template_file in (self.tmpl_module_root / module_template).glob("*.tf"):
             template = env.get_template(os.path.join(module_template, template_file.name))
             rendered = template.render(context=context)
