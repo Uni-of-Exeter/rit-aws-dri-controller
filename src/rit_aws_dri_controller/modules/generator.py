@@ -65,17 +65,15 @@ class ModuleGenerator:
             k: v if v != ""
             else None
             for k, v in kwargs.items()})
-        param_types = dict()
+        param_dict["module_name"] = context["name"]
 
         # Could use pyhcl or python-hcl2? Takes longer to figure out than denote types through inference
         # This should be better expressed against https://developer.hashicorp.com/terraform/language/expressions/types
+        param_types = dict()
         for param in param_dict:
             param_types[param] = "string"
 
             # FIXME: we make an assumption about the complex types here
-
-            logging.debug(f"{param}: {param_dict[param]}")
-
             if type(param_dict[param]) == str:
                 if re.match(r"^(true|false)$", param_dict[param]):
                     param_types[param] = "bool"
@@ -88,7 +86,7 @@ class ModuleGenerator:
 
         # This becomes the parameters and defaults dictionary for the module
         # with mappings specified in the stack add command
-        param_dict["module_name"] = context["name"]
+
         context["parameters"] = param_dict
         context["types"] = param_types
 
