@@ -64,6 +64,6 @@ class EnvironmentDeployer:
     def deploy(self):
         try:
             sp.run(shlex.split(f"terraform init -backend-config={self.config_path}"), cwd=self.wd, check=True)
-            sp.run(shlex.split(f"terraform deploy -compact-warnings -var-file={str(self.tfvars.name)}"), cwd=self.wd, check=True)
+            sp.run(shlex.split(f"terraform apply -compact-warnings -var-file={str(self.tfvars.name)}"), cwd=self.wd, check=True)
         except sp.CalledProcessError as e:
             raise RuntimeError("Failed to run deployment successfully, review the terraform warning")
