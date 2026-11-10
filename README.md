@@ -68,13 +68,36 @@ rit-platform module create vpc_dual_w_bastion \
     --data_bucket "" \
     --output_bucket ""
     
-rit-platform module create github_ecr
-rit-platform module create workflow_batch 
+# ami_id GPU ami-0b5a0bb22cc4f875e (DL w/PyTorch)
+# Instance types GPU G4dn, G5, G6, Gr6, Gr6f, G6e, G6f, P4, P4de, P5, P5e, P5en, P6-B200
+rit-platform module create workflow_batch \
+    --data_bucket "" \
+    --data_bucket_id "" \
+    --output_bucket "" \
+    --ami_id "ami-05ae078e92a0884dd" \
+    --batch_image "amazonlinux:2" \
+    --batch_instance_types "['t3.medium']" \
+    --batch_max_vcpus 2 \
+    --compute_environment_type "EC2" \
+    --compute_environment_allocation "BEST_FIT_PROGRESSIVE" \
+    --conda_env_file "environment.yml" \
+    --conda_env_name "" \
+    --git_repo_url "" \
+    --git_repo_branch "main" \
+    --public_subnet_id "" \
+    --private_subnet_id "" \
+    --account_id "" \
+    --bastion_id "" \
+    --vpc_id ""
+
+#### rit-platform module create github_ecr
 
 # Then we go and edit the structure of the modules to provide the resource implementations 
 
-# We then create a stack to house our modules
+# We then create a stack to house our modules, and initialise our variables in the terraform directory via a plan (this is unnecessary at this stage, but will set terraform up properly and check the TF config)
 rit-platform stack create batch-implementation-test
+aws sso login
+rit-platform terraform plan batch-implementation-test
 
 # Next, we compose architecture stacks from individual modules (batch-implementation-test is just one terraform architecture in its own repository, usable independently with terraform)
 # The additional parameters allow specification of where the variable input is derived from
@@ -83,17 +106,29 @@ rit-platform stack add batch-implementation-test test_store s3_tiered \
 
 rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion \
     --availability_zone data.aws_availability_zones.available.names[0] \
-    --data_bucket module.s3_tiered.s3_data_bucket \
-    --output_bucket module.s3_tiered.s3_output_bucket
+    --data_bucket module.test_store.s3_data_bucket \
+    --output_bucket module.test_store.s3_outputs_bucket
+
+rit-platform stack add batch-implementation-test test_batch workflow_batch \
+    --account_id data.aws_caller_identity.current.account_id \
+    --batch_image "amazonlinux:latest" \
+    --data_bucket module.test_store.s3_data_bucket \
+    --data_bucket_id module.test_store.s3_data_bucket_id \
+    --output_bucket module.test_store.s3_outputs_bucket \
+    --bastion_id module.test_vpc.bastion_id \
+    --private_subnet_id module.test_vpc.private_id \
+    --public_subnet_id module.test_vpc.public_id \
+    --vpc_id module.test_vpc.vpc_id \
+    --conda_env_name "workflow-env" \
+    --git_repo_url "https://github.com/Uni-of-Exeter/rit-aws-test-workflow.git"
+
+
     
-    
-rit-platform stack add batch-implementation-test test_ecr_ci github_ecr
-rit-platform stack add batch-implementation-test test_batch workflow_batch
+#### rit-platform stack add batch-implementation-test test_ecr_ci github_ecr
 
 rit-platform stack list
 rit-platform stack show batch-implementation-test
 
-aws sso login
 rit-platform terraform plan batch-implementation-test
 
 # TODO: create more deployed stacks, customising or composing as you need
