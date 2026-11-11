@@ -58,9 +58,13 @@ The underlying components of the `terraform` directory are given thus. Remember,
 ```
 # First we generate our module based on the general template with development default parameters.
 # Additional arguments are mapped into the default variables for the generated modules
-rit-platform module create s3_tiered \
+
+rit-platform module create s3_bucket \
     --account_id "" \
-    --remote_s3_bucket_arn
+    --bucket_name "" \
+    --encryption true \
+    --versioning true
+ 
 rit-platform module create vpc_dual_w_bastion \
     --bastion_instance_type t3.medium \
     --bastion_key_name exeter-bastion-key \
@@ -101,20 +105,27 @@ rit-platform terraform plan batch-implementation-test
 
 # Next, we compose architecture stacks from individual modules (batch-implementation-test is just one terraform architecture in its own repository, usable independently with terraform)
 # The additional parameters allow specification of where the variable input is derived from
-rit-platform stack add batch-implementation-test test_store s3_tiered \
-    --account_id data.aws_caller_identity.current.account_id
 
-rit-platform stack add batch-implementation-test test_vpc vpc_dual_w_bastion \
+STACK_NAME=batch-implementation-test
+
+rit-platform stack add ${STACK_NAME} data_store s3_bucket \
+    --account_id data.aws_caller_identity.current.account_id \
+    --bucket_name data
+rit-platform stack add ${STACK_NAME} output_store s3_bucket \
+    --account_id data.aws_caller_identity.current.account_id \
+    --bucket_name output
+
+rit-platform stack add ${STACK_NAME} test_vpc vpc_dual_w_bastion \
     --availability_zone data.aws_availability_zones.available.names[0] \
-    --data_bucket module.test_store.s3_data_bucket \
-    --output_bucket module.test_store.s3_outputs_bucket
+    --data_bucket module.data_store.bucket_arn \
+    --output_bucket module.output_store.bucket_arn
 
-rit-platform stack add batch-implementation-test test_batch workflow_batch \
+rit-platform stack add ${STACK_NAME} test_batch workflow_batch \
     --account_id data.aws_caller_identity.current.account_id \
     --batch_image "amazonlinux:latest" \
-    --data_bucket module.test_store.s3_data_bucket \
-    --data_bucket_id module.test_store.s3_data_bucket_id \
-    --output_bucket module.test_store.s3_outputs_bucket \
+    --data_bucket module.data_store.bucket_arn \
+    --data_bucket_id module.data_store.bucket_id \
+    --output_bucket module.output_store.bucket_arn \
     --bastion_id module.test_vpc.bastion_id \
     --private_subnet_id module.test_vpc.private_id \
     --public_subnet_id module.test_vpc.public_id \
@@ -132,6 +143,13 @@ rit-platform stack show batch-implementation-test
 rit-platform terraform plan batch-implementation-test
 
 # TODO: create more deployed stacks, customising or composing as you need
+```
+
+### Old stuff (ignore)
+```
+rit-platform module create s3_bucket --account_id ""
+rit-platform stack add batch-implementation-test test_store s3_tiered \
+    --account_id data.aws_caller_identity.current.account_id
 ```
 
 # Things to do!
