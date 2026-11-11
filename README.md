@@ -2,7 +2,7 @@
 
 ## Quick notes on setting up
 
-Run `aws configure sso` to set up the account endpoint you want to use.
+Go to your acccount in the AWS portal, then run `aws configure sso` to set up the account endpoint you want to use. This should produce the configuration that you reference in `AWS_PROFILE` to point the tool where you want it.
 
 Set the region to `eu-west-2` (London) unless you have a different preference, then give things an appropriate profile name and suchlike.
 
