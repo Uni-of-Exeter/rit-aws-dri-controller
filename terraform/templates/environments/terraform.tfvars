@@ -14,6 +14,6 @@ private_subnet_cidr = "10.0.2.0/24"
 
 # University of Exeter CIDR blocks — restrict SSH to campus network
 # Replace with actual University CIDR ranges
-university_cidr_blocks = ["144.173.0.0/16"]
+university_cidr_blocks = ["192.168.0.0/16"]
 {% endblock %}
 
